@@ -7,7 +7,7 @@ namespace ProcessedValue
     [Serializable] public class Processed<TValue> : Processed<int, TValue> 
     {
         public Processed() {}
-        public Processed(TValue baseValue) : base(baseValue) {}
+        public Processed(TValue initialValue) : base(initialValue) {}
     }
 
     [Serializable] public class Processed<TSort, TValue>
@@ -33,8 +33,8 @@ namespace ProcessedValue
 
         public Processed() {}
 
-        public Processed(TValue baseValue) =>
-            BaseValue = _value = baseValue;
+        public Processed(TValue initialValue) =>
+            BaseValue = _value = initialValue;
 
         public virtual void AddProcessor(Processor<TValue> processor, TSort priority)
         {
