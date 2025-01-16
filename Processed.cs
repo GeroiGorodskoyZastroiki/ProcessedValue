@@ -62,11 +62,10 @@ namespace ProcessedValue
             IsDirty = true;      
         }
 
-        public void RemoveProcessorAtAll(Processor<TValue> processor)
+        public virtual void RemoveProcessorAtAll(Processor<TValue> processor)
         {
             foreach (var processorList in Processors.Values)
-                if (processorList.Contains(processor)) 
-                    processorList.Remove(processor);
+                processorList.RemoveAll(x => x == processor);
                 
             IsDirty = true;  
         }
