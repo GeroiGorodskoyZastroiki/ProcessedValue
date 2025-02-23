@@ -65,4 +65,3 @@ processed.ProcessValue();
 ```
 
 ProcessedValue was developed for use with Unity, so the code contains #if UNITY_EDITOR directives.  
-You can get rid of them if you don't deal with Unity.
