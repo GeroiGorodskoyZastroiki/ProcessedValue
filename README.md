@@ -8,25 +8,14 @@ void ProcessorDelegate<TValue>(ref TValue value)
 
 ## Usage Example
 ```c#
-//Create Processed with base value
+//Create Processed
 Processed<int> processed = new Processed<int>(2);
-
-//Create Processed w/o base value (base value = default)
-Processed<int> processed2 = new Processed<int>();
 
 //Create Processor from anonymous lambda
 Processor<int> processor = new Processor<int>((ref int x) => x *= 2);
 
 //Create Processor from named method
-Processor<int> processor2;
-void Process(ref int x)
-{
-    //do whatever
-    x += 2;
-}
-//A field initializer cannot reference the non-static field, so ...
-void SomeMethod() =>
-    processor2 = new Processor<int>(Process);
+Processor<int> processor2 = new Processor<int>(SomeMethodName);
 
 //Add Processor to Processed
 processed.AddProcessor(processor, 0); //(processor, priority)
@@ -44,11 +33,11 @@ processed.AddProcessor(processor2, 0);
 processed.AddProcessor(processor2, 1);
 //(2)(* 2 + 2 + 2)(+ 2) = 10
 
-//Add Processor on another Processed
+//Add Processor to another Processed
 processed2.AddProcessor(processor2, 0);
 //(0)(+ 2) = 2
 
-//Remove first Processor from priority
+//Remove first such Processor from priority
 processed.RemoveProcessor(processor2, 0);
 //(2)(* 2 + 2)(+ 2) = 8
 
@@ -60,7 +49,7 @@ processed.RemoveProcessorAtAll(processor2);
 processed.ContainsProcessor(processor2);
 //false
 
-//Force call ProcessValue (in most cases it doesn't make sense)
+//Force call ProcessValue
 processed.ProcessValue();
 ```
 

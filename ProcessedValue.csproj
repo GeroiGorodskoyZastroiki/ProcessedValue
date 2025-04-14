@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;netstandard2.1;net472</TargetFrameworks>
+    <PackageId>ProcessedValue</PackageId>
+    <Version>1.0.2</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/GeroiGorodskoyZastroiki/ProcessedValue</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/GeroiGorodskoyZastroiki/ProcessedValue</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>data structure;data;delegate;processed;value;generic</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <None Include="README.md" Pack="true" PackagePath="/"/>
+  </ItemGroup>
+
+</Project>
