@@ -4,83 +4,147 @@ using System.Collections.Generic;
 
 namespace ProcessedValue
 {
-    [Serializable] public class Processed<TValue> : Processed<int, TValue> 
+    /// <summary>
+    /// Processed value container with priority-based command queue
+    /// </summary>
+    /// <typeparam name="TValue">Type of value to process</typeparam>
+    [Serializable]
+    public class Processed<TValue> : Processed<int, TValue>
     {
-        public Processed() {}
-        public Processed(TValue initialValue) : base(initialValue) {}
+        /// <summary>
+        /// Create empty processed value
+        /// </summary>
+        public Processed() { }
+
+        /// <summary>
+        /// Create processed value with initial value
+        /// </summary>
+        /// <param name="initialValue">Initial base value</param>
+        public Processed(TValue initialValue) : base(initialValue) { }
     }
 
-    [Serializable] public class Processed<TSort, TValue>
+    /// <summary>
+    /// Processed value container with priority-based command queue
+    /// </summary>
+    /// <typeparam name="TSort">Type for priority sorting</typeparam>
+    /// <typeparam name="TValue">Type of value to process</typeparam>
+    [Serializable]
+    public class Processed<TSort, TValue> where TSort : IComparable<TSort>
     {
+        /// <summary>
+        /// Indicates whether the value needs recalculation
+        /// </summary>
         public bool IsDirty;
+
         #if UNITY_EDITOR
-        [UnityEngine.SerializeReference] 
+        [UnityEngine.SerializeReference]
         #endif
+        /// <summary>
+        /// Base value before processing
+        /// </summary>
         public TValue BaseValue;
+
         #if UNITY_EDITOR
-        [UnityEngine.SerializeReference] 
+        [UnityEngine.SerializeReference]
         #endif
         protected TValue _value;
+
+        /// <summary>
+        /// Current processed value (recalculated lazily when dirty)
+        /// </summary>
         public TValue Value
-        { 
+        {
             get
             {
                 if (IsDirty) ProcessValue();
                 return _value;
             }
         }
-        public SortedList<TSort, List<Processor<TValue>>> Processors = new SortedList<TSort, List<Processor<TValue>>>();
 
-        public Processed() {}
+        /// <summary>
+        /// Command queue organized by priority
+        /// </summary>
+        public SortedList<TSort, List<ICommand<TValue>>> Commands = new SortedList<TSort, List<ICommand<TValue>>>();
 
+        /// <summary>
+        /// Create empty processed value
+        /// </summary>
+        public Processed() { }
+
+        /// <summary>
+        /// Create processed value with initial value
+        /// </summary>
+        /// <param name="initialValue">Initial base value</param>
         public Processed(TValue initialValue) =>
             BaseValue = _value = initialValue;
 
-        public virtual void AddProcessor(Processor<TValue> processor, TSort priority)
+        /// <summary>
+        /// Add a command with specified priority
+        /// </summary>
+        /// <param name="command">Command to add</param>
+        /// <param name="priority">Command priority</param>
+        public virtual void AddCommand(ICommand<TValue> command, TSort priority)
         {
-            if (Processors.ContainsKey(priority)) 
-                Processors[priority].Add(processor);
-            else 
-                Processors.Add(priority, new List<Processor<TValue>>(){ processor });
+            if (Commands.ContainsKey(priority))
+                Commands[priority].Add(command);
+            else
+                Commands.Add(priority, new List<ICommand<TValue>>() { command });
 
-            IsDirty = true; 
+            IsDirty = true;
         }
 
-        public virtual void RemoveProcessor(Processor<TValue> processor, TSort priority)
+        /// <summary>
+        /// Remove a command from specified priority
+        /// </summary>
+        /// <param name="command">Command to remove</param>
+        /// <param name="priority">Priority to remove from</param>
+        public virtual void RemoveCommand(ICommand<TValue> command, TSort priority)
         {
-            if (Processors[priority].FirstOrDefault(x => x == processor) == null) 
+            if (Commands[priority].FirstOrDefault(x => x == command) == null)
             {
-                Console.Error.WriteLine("Can't find processor to remove.");
+                Console.Error.WriteLine("Can't find command to remove.");
                 #if UNITY_EDITOR
-                UnityEngine.Debug.LogWarning("Can't find processor to remove.");
+                UnityEngine.Debug.LogWarning("Can't find command to remove.");
                 #endif
                 return;
             }
-            else 
-                Processors[priority].Remove(processor);
+            else
+                Commands[priority].Remove(command);
 
-            IsDirty = true;      
+            IsDirty = true;
         }
 
-        public virtual void RemoveProcessorAtAll(Processor<TValue> processor)
+        /// <summary>
+        /// Remove a command from all priorities
+        /// </summary>
+        /// <param name="command">Command to remove</param>
+        public virtual void RemoveCommandAtAll(ICommand<TValue> command)
         {
-            foreach (var processorList in Processors.Values)
-                processorList.RemoveAll(x => x == processor);
-                
-            IsDirty = true;  
+            foreach (var commandList in Commands.Values)
+                commandList.RemoveAll(x => x == command);
+
+            IsDirty = true;
         }
 
-        public virtual bool ContainsProcessor(Processor<TValue> processor) =>
-            Processors.Any(x => x.Value.Contains(processor) == true);
+        /// <summary>
+        /// Check if command exists in any priority
+        /// </summary>
+        /// <param name="command">Command to check</param>
+        /// <returns>True if command exists</returns>
+        public virtual bool ContainsCommand(ICommand<TValue> command) =>
+            Commands.Any(x => x.Value.Contains(command) == true);
 
+        /// <summary>
+        /// Force value recalculation
+        /// </summary>
         public virtual void ProcessValue()
         {
             IsDirty = false;
 
             _value = BaseValue;
-            foreach (var priorityList in Processors)
-                foreach (var processor in priorityList.Value)
-                    processor.Delegate(ref _value);
+            foreach (var priorityList in Commands)
+                foreach (var command in priorityList.Value)
+                    command.Execute(ref _value);
         }
     }
 }
