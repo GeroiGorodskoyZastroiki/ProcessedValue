@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;netstandard2.1;net472</TargetFrameworks>
     <PackageId>ProcessedValue</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/GeroiGorodskoyZastroiki/ProcessedValue</PackageProjectUrl>
     <RepositoryUrl>https://github.com/GeroiGorodskoyZastroiki/ProcessedValue</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>data structure;data;delegate;processed;value;generic</PackageTags>
+    <PackageTags>data structure;command pattern;delegate;generic;parametrized object;pipeline;chain of responsibility</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
